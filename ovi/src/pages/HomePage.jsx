@@ -1,74 +1,107 @@
-import React, { useState, useCallback } from 'react';
-import axios from 'axios';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from "../components/Sidebar";
-import ClimaWidget from '../components/ClimaWidget';
-import UserProfile from '../components/UserProfile';
-import Calendario from '../components/Calendario';
-import Notificaciones from '../components/Notificaciones';
+import React, { useState, useCallback, useEffect } from 'react';  
+import axios from 'axios';  
+import styled from 'styled-components';  
+import { useNavigate } from 'react-router-dom';  
+import Sidebar from "../components/Sidebar";  
+import ClimaWidget from '../components/ClimaWidget';  
+import UserProfile from '../components/UserProfile';  
+import Calendario from '../components/Calendario';  
+import Notificaciones from '../components/Notificaciones';  
 
-// Estilos para la página principal
-const HomePageContainer = styled.div`
-  display: flex;
-  height: 100vh; /* Ajusta el alto de la página al tamaño completo del viewport */
-  background-image: url('/image1.jpg'); /* Ruta a tu imagen de fondo */
-  background-size: cover; /* Cubre todo el área disponible */
-  background-position: center; /* Centra la imagen */
-`;
+// Estilos para la página principal  
+const HomePageContainer = styled.div`  
+  display: flex;  
+  height: 100vh;  
+  width: 100%; /* Ajusta el ancho según tus necesidades */  
+  background-color: #161726;  
+`;  
 
-const MainContent = styled.main`
-  flex: 1; /* Ocupa todo el espacio restante */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
+const MainContent = styled.main`  
+  flex: 1;  
+  display: flex;  
+  flex-direction: column;  
+  align-items: center;  
+  padding: 20px; /* Espaciado interno */  
+`;  
 
-const HomePage = ({ onLogout }) => {
-  const [data, setData] = useState(null); // Inicializamos data como null
-  const [error, setError] = useState(null);
-  const [user, setUser] = useState({});
-  const navigate = useNavigate();
+const TopWidgetsContainer = styled.div`  
+  display: flex;  
+  width: 100%;  
+  justify-content: space-between;  
+  margin-bottom: 20px; /* Espaciado entre los contenedores */  
+`;  
 
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await axios.get('/api/data');
-      setData(response.data); // Guardamos los datos recibidos
-      setError(null); // Reiniciamos el estado de error si estaba presente
-      setUser(response.data.user); // Actualizamos el estado del usuario
-    } catch (error) {
-      setError(error); // Capturamos el error y lo guardamos en el estado
-    }
-  }, []);
+const BottomWidgetsContainer = styled.div`  
+  display: flex;  
+  flex-direction: column;  
+  width: 100%;  
+  align-items: center;  
+`;  
 
-  const handleRegisterNavigation = () => {
-    navigate('/register');
-  };
+const ErrorMessage = styled.p`  
+  color: red;  
+`;  
 
-  return (
-    <HomePageContainer>
-      <Sidebar />
-      <MainContent>
-        <ClimaWidget />
-        <UserProfile user={user} />
-        <h1>Bienvenido a OVI</h1>
-        <button onClick={fetchData}>Obtener datos</button>
-        {data && (
-          <div>
-            <h2>Datos del usuario:</h2>
-            <p>Nombre: {user.nombre}</p>
-            <p>Email: {user.email}</p>
-          </div>
-        )}
-        {error && <div>Error: {error.message}</div>}
-        <Calendario />
-        <Notificaciones />
-        <button onClick={handleRegisterNavigation}>Registrarse</button>
-        <button onClick={onLogout}>Cerrar sesión</button>
-      </MainContent>
-    </HomePageContainer>
-  );
-};
+const HomePage = ({ onLogout }) => {  
+  const [data, setData] = useState(null);  
+  const [error, setError] = useState(null);  
+  const [user, setUser] = useState({});  
+  const navigate = useNavigate();  
+
+  const fetchData = useCallback(async () => {  
+    try {  
+      const response = await axios.get('/api/data');  
+      console.log('response.data:', response.data); // Verificar los datos recibidos  
+      console.log('response.data.user:', response.data.user); // Verificar los datos del usuario  
+      setData(response.data);  
+      setError(null);  
+      if (response.data.user) {  
+        setUser(response.data.user);  
+      } else {  
+        console.error("No se encontraron datos de usuario en la respuesta");  
+      }  
+    } catch (error) {  
+      setError("Error al cargar los datos, por favor intente de nuevo más tarde.");  
+      console.error(error);  
+    }  
+  }, []);  
+
+  useEffect(() => {  
+    fetchData();  
+  }, [fetchData]);  
+
+  const handleLogout = () => {  
+    onLogout();  
+    navigate('/login'); // Redirigir a la pagina de inicio de sesion  
+  };  
+
+  return (  
+    <HomePageContainer>  
+      <Sidebar />  
+      <MainContent>  
+        <TopWidgetsContainer>  
+          <ClimaWidget />  
+          {user && Object.keys(user).length > 0 ? (  
+            <UserProfile user={user} />  
+          ) : (  
+            <p>Cargando perfil de usuario...</p>  
+          )}  
+        </TopWidgetsContainer>  
+        <BottomWidgetsContainer>  
+          {error && <ErrorMessage>{error}</ErrorMessage>}  
+          {data ? (  
+            <Calendario datos={data.riegoDatos} /> // Asegúrate de que 'riegoDatos' es la propiedad correcta  
+          ) : (  
+            <p>Cargando calendario...</p>  
+          )}  
+          <Notificaciones />  
+        </BottomWidgetsContainer>  
+        <button onClick={handleLogout} style={{ background: '#566573', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', marginTop: '20px', cursor: 'pointer' }}>  
+          Cerrar sesión  
+        </button>  
+      </MainContent>  
+    </HomePageContainer>  
+  );  
+};  
 
 export default HomePage;

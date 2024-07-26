@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Notificaciones = () => {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -11,10 +12,10 @@ const Notificaciones = () => {
 
   const fetchNotificaciones = async () => {
     try {
-      const response = await fetch('/api/notificaciones');
+      const response = await axios.get('/api/notificaciones');
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Error HTTP! status: ${response.status}`);
       }
 
       const contentType = response.headers.get('content-type');
@@ -26,7 +27,10 @@ const Notificaciones = () => {
       setNotificaciones(Array.isArray(result) ? result : []);
     } catch (error) {
       console.error('Error al obtener notificaciones:', error);
-      setError(error.message);
+      setError(
+        error.message ||
+          'Se produjo un error al intentar obtener las notificaciones.'
+      );
     } finally {
       setIsLoading(false); // Finaliza la carga, independientemente del resultado
     }

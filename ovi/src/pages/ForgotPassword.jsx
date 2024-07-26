@@ -3,16 +3,30 @@ import axios from "axios";
 import styled from "styled-components";
 
 const Container = styled.div`
-  /* estilos del contenedor */
+  background-color: #161726;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 400px;
+  text-align: center;
 `;
 
 const Button = styled.button`
-  /* estilos del botón */
+  background-color: #566573;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 const Input = styled.input`
-  /* estilos del campo de entrada */
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
 `;
+
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +43,6 @@ const ForgotPassword = () => {
       setMessage("Ha ocurrido un error. Por favor, inténtalo de nuevo.");
     }
   };
-
   return (
     <Container>
       <form onSubmit={handleForgotPassword}>
@@ -41,9 +54,8 @@ const ForgotPassword = () => {
         />
         <Button type="submit">Recuperar contraseña</Button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <message>{message}</message>}
     </Container>
   );
-};
-
-export default ForgotPassword;
+}
+export default ForgotPassword

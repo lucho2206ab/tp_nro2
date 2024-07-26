@@ -71,7 +71,7 @@ const ModalInput = styled.input`
 `;
 
 const ModalButton = styled.button`
-  background-color: #4CAF50; /* Color de fondo */
+  background-color: #151d26; /* Color de fondo */
   color: white;
   padding: 10px 20px;
   margin-top: 10px; /* Espacio entre el botón y los campos */
@@ -91,7 +91,7 @@ const ModalLink = styled.a`
 Modal.setAppElement("#root");
 
 const Login = () => {
-  const [email, setEmail] = useState(""); // Correo electrónico
+  const [email, setEmail] = useState(""); // Utilizar el hook usestate - Correo electrónico
   const [password, setPassword] = useState("");
   const [abrirModal, setAbrirModal] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
@@ -100,7 +100,7 @@ const Login = () => {
   const iniciarSesion = async (e) => {
     e.preventDefault();
     try {
-      const respuesta = await axios.post("http://localhost:5173/login", { correoElectronico, contraseña });
+      const respuesta = await axios.post("http://localhost:5000/login", { email, password });
       if (respuesta.data.error === "user_not_found") {
         setMensajeError("Usuario no registrado");
       } else {
@@ -122,12 +122,11 @@ const Login = () => {
       <StyledModal isOpen={abrirModal} onRequestClose={() => setAbrirModal(false)}>
         <ModalContent>
           <ModalTitle>Bienvenido a OVI</ModalTitle>
-          <ModalButton type="submit" onClick={iniciarSesion}>Iniciar sesión</ModalButton>
           <ModalLabel>Email:</ModalLabel>
           <ModalInput type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} tabIndex={0} />
           <ModalLabel>Contraseña:</ModalLabel>
           <ModalInput type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} tabIndex={1} />
-          <ModalButton type="submit">Iniciar sesión</ModalButton>
+          <ModalButton type="submit" onClick={iniciarSesion}>Iniciar sesión</ModalButton>
           <ModalLink href="/register">Registrarse</ModalLink>
           <ModalLink href="/forgot-password">¿Olvidaste tu contraseña?</ModalLink>
           </ModalContent>

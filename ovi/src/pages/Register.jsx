@@ -67,7 +67,7 @@ const Register = () => {
     setErrorMessage(''); // Limpiar el mensaje de error antes de cada envío
   
     try {
-      const { data } = await axios.post('http://localhost:5173/register', {
+      const { data } = await axios.post('http://localhost:5000/register', {
         name,
         surname,
         dni,
